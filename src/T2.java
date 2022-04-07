@@ -1,6 +1,7 @@
 import com.Demo;
 import domain.SymbolTableDo;
 import tools.ElfParser;
+import tools.LibPathFinder;
 import tools.MapsParser;
 import tools.Memory;
 
@@ -18,13 +19,14 @@ public class T2 {
         long libjavaBaseAddress = mapsParser.getLibMemoryAddress("libjava.so");
         mapsParser.close();
 
-        ElfParser libjvmElfParser = new ElfParser("/usr/local/src/jdk1.8.0_202/jre/lib/amd64/server/libjvm.so");
+        String libPath = LibPathFinder.getLibPath();
+        ElfParser libjvmElfParser = new ElfParser(libPath + "/server/libjvm.so");
         SymbolTableDo jni_getCreatedJavaVMsSymbolTableDo = libjvmElfParser.findSymbolTable("JNI_GetCreatedJavaVMs", ".dynsym");
         long jni_getCreatedJavaVMsOffset = ElfParser.byteToLong(jni_getCreatedJavaVMsSymbolTableDo.st_value, true);
         long jni_getCreatedJavaVMsAddress = libjvmBaseAddress + jni_getCreatedJavaVMsOffset;
         System.out.println("[+] libjvm.so JNI_GetCreatedJavaVMs address is: 0x" + Long.toHexString(jni_getCreatedJavaVMsAddress));
 
-        ElfParser libjavaElfParser = new ElfParser("/usr/local/src/jdk1.8.0_202/jre/lib/amd64/libjava.so");
+        ElfParser libjavaElfParser = new ElfParser(libPath + "/libjava.so");
         SymbolTableDo java_java_io_fileInputStream_skip0SymbolTableDo = libjavaElfParser.findSymbolTable("Java_java_io_FileInputStream_skip0", ".symtab");
         long java_java_io_fileInputStream_skip0SymbolTableDoOffset = ElfParser.byteToLong(java_java_io_fileInputStream_skip0SymbolTableDo.st_value, true);
         long java_java_io_fileInputStream_skip0SymbolTableDoAddress = libjavaBaseAddress + java_java_io_fileInputStream_skip0SymbolTableDoOffset;
@@ -53,6 +55,7 @@ public class T2 {
         URL demoClassURL = T2.class.getResource("/Demo.class");
         String demoClassURLPathath = demoClassURL.getPath();
         byte[] evilClassClassBytes = readFile(demoClassURLPathath);
+
         /*
         * InstrumentationImpl.redefineClasses()
         * */

@@ -13,8 +13,7 @@ public class MapsParser {
         mapsReader.seek(0L);
         long libMemeryAddress = 0L;
         String procSelfMem;
-        //libjvm.so address
-        long JNI_GetCreatedJavaVMsAddress = 0L;
+
         while((procSelfMem = mapsReader.readLine()) != null) {
             if (procSelfMem.contains(libname)) {
                 String[] address = procSelfMem.split(" ");
